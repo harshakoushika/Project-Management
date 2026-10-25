@@ -1,0 +1,49 @@
+﻿@model PM.Web.Administration.Project.TeamViewModel
+
+@{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Team";
+}
+
+<!-- LEFT MENU -->
+@Html.Partial("_LeftMenuBar", Model.ProjectId)
+
+<!-- ADD TO TEAM MODAL -->
+@Html.Partial("_AddToTeamModal", Model)
+
+<!-- PAGE -->
+<div class="page">
+
+    <div class="page-content-header">
+
+        <span class="breadcrumbs">
+            @Html.ActionLink("Home", "Index", "Dashboard", null, null) /
+            @Html.ActionLink(Model.ProjectName, "Overview", "Project", new { pId = PM.Common.ShortGuid.Encode(Model.ProjectId) }, null) /
+            <span>Team</span>
+        </span>
+
+        <div class="header-content-right">
+            <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#add-user-modal" data-backdrop="static">Add New</button>
+        </div>
+    </div>
+
+    <div id="team-list" class="page-content">
+        @Html.Partial("_TeamList", Model.ProjectUsers)
+    </div> 
+       
+</div>
+
+@section Scripts
+{
+    <script>
+
+        // If user is added remove it from the select list.
+        function onSuccess() {
+            $("select[name=SelectedUserId] option:selected").remove();
+        }
+
+    </script>
+}
+
+
+

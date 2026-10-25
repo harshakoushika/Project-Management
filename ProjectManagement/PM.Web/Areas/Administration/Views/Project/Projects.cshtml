@@ -1,0 +1,37 @@
+﻿@model PM.Web.Administration.Project.ProjectsViewModel
+@using PagedList.Mvc
+
+@{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Projects";
+}
+
+<!-- LEFT MENU -->
+@Html.Partial("_LeftMenuBar", Guid.Empty)
+
+<!-- ADD NEW PROJECT MODAL -->
+<div id="new-project">
+    @Html.Partial("_NewProjectModal", new PM.Web.Administration.Project.CreateProjectViewModel())
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+    <div class="page-content-header">
+
+        <span class="breadcrumbs">
+            @Html.ActionLink("Home", "Index", "Dashboard", null, null) /
+            <span>Projects</span>
+        </span>
+
+        <div class="header-content-right">
+            <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#new-project-modal" data-backdrop="static">Add New</button>                
+        </div>
+    </div>
+
+    <div id="projects-list" class="page-content">
+        @Html.Partial("_ProjectsList", Model.Projects)
+    </div>
+
+</div>
+                

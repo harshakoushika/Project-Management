@@ -1,0 +1,79 @@
+﻿@model IPagedList<PM.Web.Administration.Task.TaskDTO>
+@using PM.Common.Extensions
+@using PagedList
+@using PagedList.Mvc
+
+@if (Model != null && Model.Count() > 0)
+{
+    <div class="widget">
+
+        <div class="table-tasks">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="table-tasks-title-head">Title</th>
+                        <th class="table-tasks-progress-head text-center">Progress</th>
+                        <th class="table-tasks-priority-head text-center">Priority</th>
+                        <th class="table-tasks-duedate-head">Due Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var task in Model)
+                    {
+                        <tr>
+                            <td class="table-tasks-title-body">
+                                <a href="@Url.Action("Edit", "Task", new { area = "Administration", tId = PM.Common.ShortGuid.Encode(task.Id) })">
+                                    <span>@task.Title</span>
+                                </a>
+                                <div style="padding-left: 10px;">
+                                    <span class="table-tasks-additional color-success">@task.AssignedToUsername</span>
+                                    <span class="table-tasks-additional color-success"><i class="glyphicon glyphicon-allign-middle glyphicon-comment"></i> @task.CommentsCount</span>
+                                   
+                                    @{ 
+                                        // Get part of the CSS class used for due date warning icon.
+                                        var dueDateLabel = task.DueDate.ToDueDateWarningString(2, "warning", "alert");
+                                    }
+                                    @if (!String.IsNullOrEmpty(dueDateLabel))
+                                    {
+                                        <span class="table-tasks-additional color-@dueDateLabel"><i class="glyphicon glyphicon-allign-middle glyphicon-time"></i></span>
+                                    }
+                                </div>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="progress">
+                                    <div class="progress-bar warning" style="width: @(task.Progress)%;">
+                                        <span class="sr-only">@(task.Progress)% Complete</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                @{ 
+                                    // Priority name is part of the css class and can be used to style the priority icon.
+                                    var priority = ((IDictionary<Guid, string>)ViewBag.PriorityList).First(p => p.Key == task.PriorityId).Value.ToLower();
+                                }
+                                <span class="table-tasks-priority-body priority-@priority"><i class="glyphicon glyphicon-allign-middle glyphicon-exclamation-sign"></i></span>
+                            </td>
+                            <td>
+                                <span class="table-tasks-duedate-body"><i class="glyphicon glyphicon-allign-middle glyphicon-time"></i> @task.DueDate.ToNullableDateTimeString()</span>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="widget-footer">
+        @Html.PagedListPager(Model, page => Url.Action("TasksList", "Task", new { area = "Administration", pId = ViewBag.PId, page }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(
+            new AjaxOptions()
+            {
+                HttpMethod = "GET",
+                UpdateTargetId = "tasks-list",
+                InsertionMode = InsertionMode.Replace
+            }))
+    </div>
+}

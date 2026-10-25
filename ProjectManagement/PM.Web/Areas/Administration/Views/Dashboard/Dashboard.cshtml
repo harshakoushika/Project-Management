@@ -1,0 +1,133 @@
+﻿@model DashboardViewModel
+
+@using PM.Web.Infrastructure.HtmlHelpers
+@using PM.Common.Extensions
+@using GravatarHelper.Extensions
+
+@{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Dashboard";
+}
+
+<!-- LEFT MENU -->
+@Html.Partial("_LeftMenuBar", Guid.Empty)
+
+<!-- PAGE -->
+<div class="page">
+
+    <div class="page-content-header">
+
+        <span class="breadcrumbs">
+            <span>Home</span>
+        </span>
+
+        <div class="header-content-right">
+            <!--Add btn here-->
+        </div>
+    </div>
+
+    <div class="page-content">
+
+        <!-- Profile widget -->
+        <div class="col-md-3">
+            <div class="widget">
+                <div class="block block-profile">
+                    @Html.Gravatar((string)ViewBag.UserEmail, 120, GravatarHelper.Common.GravatarHelper.DefaultImageMysteryMan, new { @class = "img-avatar img-lg" })
+                    <h3>@Model.UserName</h3>
+                </div>
+
+                <div class="block block-profile-role">
+                    <h3>@Model.UserTitle</h3>
+                </div>
+                <div class="block block-profile-footer">
+                    <div class="row text-center">
+                        <div class="col-xs-6">
+                            <!--<i class="glyphicon glyphicon-briefcase"></i>-->
+                            <h3>@Model.NumOfProjects</h3>
+                            <h5>Projects</h5>
+                        </div>
+                        <div class="col-xs-6">
+                            <!--<i class="glyphicon glyphicon-tag"></i>-->
+                            <h3>@Model.NumOfTasks</h3>
+                            <h5>Tasks</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="widget profile-activity">
+                <ul class="nav nav-tabs nav-tabs-line" data-plugin="nav-tabs" role="tablist">
+
+                    <li class="active" role="presentation">
+                        <a data-toggle="tab" href="#activities" aria-expanded="true">Activities</a>
+                    </li>
+
+                    <li role="presentation">
+                        <a data-toggle="tab" href="#tasks" aria-expanded="false">Tasks</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="activities" role="tabpanel">
+
+                        <ul class="list-group">
+                            
+                            @foreach (var activity in Model.Activities)
+                            {
+                                <li class="list-group-item">
+                                    <div class="row">
+
+                                        <div class="col-xs-10">
+                                            @Html.DashboardActivity(activity.ActivityType, activity.Magnitude) @activity.ActivityText
+                                        </div>
+                                        <div class="col-xs-2">
+                                            @activity.DateCreated.ToPrettyDateTimeString()
+                                        </div>
+
+                                    </div>
+                                </li>
+                            }
+
+                        </ul>
+
+                    </div>
+
+                    <div class="tab-pane" id="tasks" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-striped list-group-tasks">
+                                <thead>
+                                    <tr>
+                                        <td>Name</td>
+                                        <td>Project</td>
+                                        <td>Status</td>
+                                        <td>Due Date</td>
+                                        <td>Actions</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var task in Model.Tasks)
+                                    {
+                                        <tr>
+                                            <td>@task.Title</td>
+                                            <td>@task.ProjectName</td>
+                                            <td>@Model.Statuses[task.StatusId]</td>
+                                            <td>@task.DueDate.ToNullableDateTimeString()</td>
+                                            <td>@Html.ActionLink("View", "Edit", "Task", new { area = "Administration", tId = PM.Common.ShortGuid.Encode(task.Id) }, null)</td>
+                                        </tr>
+                                    }
+                                
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+

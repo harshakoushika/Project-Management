@@ -1,0 +1,132 @@
+﻿@using GravatarHelper.Extensions
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!--IE Compatibility modes-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--Mobile first-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <meta name="msapplication-TileColor" content="#5bc0de" />
+
+    <title>Project Managment</title>
+
+    @Styles.Render("~/Content/bootstrap/css")
+    @Styles.Render("~/Content/site-style/css")
+    @RenderSection("Style", false)
+</head>
+
+<body>
+
+    <div id="loader" class="overlay" style="display:none;">
+        <div class="spinner">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
+        </div>
+    </div>
+    
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top pm-site-navbar" role="navigation">
+
+        <!-- NAVBAR HEADER -->
+        <div class="pm-navbar-header">
+            <button type="button" class="navbar-toggle hamburger hamburger-close navbar-toggle-left hided unfolded" data-toggle="menubar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="hamburger-bar"></span>
+            </button>
+        </div>
+
+        <!-- NAVBAR CONTAINER -->
+        <div class="navbar-container container-fluid">
+            <div class="nav">
+                <ul class="nav navbar-toolbar">
+                    <li class="pull-left pm-navbar-item-left">
+                        <a href="javascript:void(0)" title="Notifications" role="button">
+                            <i class="glyphicon glyphicon-bell" aria-hidden="true"></i>
+                        </a>
+                    </li>
+
+                    <li class="pull-left pm-navbar-item-left">
+                        <a href="javascript:void(0)" title="Messages" role="button">
+                            <i class="glyphicon glyphicon-envelope" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="pull-right pm-navbar-item-right">
+                        <div class="button-group">
+                            <button id="user-popup" data-title="Ksterle" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-popover-content="#user-popover" class="btn btn-sm btn-default btn-image" type="button">
+                                @Html.Gravatar((string)ViewBag.UserEmail, 60, GravatarHelper.Common.GravatarHelper.DefaultImageMysteryMan, null)
+                                <span class="caret"></span>
+                            </button>
+                        </div>
+                    </li>
+
+                </ul>
+
+                <!-- NAVBAR RIGHT BUTTONS PANEL -->
+                @*<div class="navbar-right pm-navbar-right">
+                    <ul class="nav navbar-toolbar navbar-right navbar-toolbar-right">
+                        <li>
+                            
+                        </li>
+                    </ul>
+
+                    <ul class="nav navbar-toolbar navbar-right navbar-toolbar-right navbar-toolbar-group"></ul>
+                </div>*@
+
+            </div>
+        </div>
+    </nav>
+    <!-- End Top Navbar -->
+
+    <div class="main-container">
+        @RenderBody()       
+    </div>
+
+    <div id="user-popover" class="hidden">
+        <div class="popover-heading">Ksterle</div>
+        <div class="popover-body">
+            @using (Html.BeginForm("SignOut", "Security", new { area = "" }, FormMethod.Post, null))
+            {
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-sm btn-warning">Logout</button>
+            }
+        </div>
+    </div>  
+        
+    <!-- js placed at the end of the document so the pages load faster -->
+    @Scripts.Render("~/bundles/core/js")
+    @RenderSection("Scripts", false)
+
+</body>
+</html>
+
+<script>
+    $("[data-toggle=popover]").popover({
+        html: true,
+        content: function () {
+            var content = $(this).attr("data-popover-content");
+            return $(content).children(".popover-body").html();
+        },
+        title: function () {
+            var title = $(this).attr("data-popover-content");
+            return $(title).children(".popover-heading").html();
+        }
+    });
+
+    function showLoader(show) {
+
+        if (show) {
+            $('#loader').show();
+        } else {
+            $('#loader').hide();
+        }
+    }
+</script>
+
+

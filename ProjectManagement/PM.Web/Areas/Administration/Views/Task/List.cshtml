@@ -1,0 +1,100 @@
+﻿@model PM.Web.Administration.Task.ListViewModel
+@using PagedList
+@using PagedList.Mvc
+
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+}
+
+<!-- LEFT MENU -->
+@Html.Partial("_LeftMenuBar", Model.ProjectId)
+
+<!-- ADD NEW TASK MODAL -->
+@Html.Partial("_NewTaskModal", new PM.Web.Administration.Task.CreateTaskViewModel() { ProjectId = Model.ProjectId })
+
+<!-- PAGE -->
+<div class="page">
+
+    <div class="page-content-header">
+
+        <span class="breadcrumbs">
+            @Html.ActionLink("Home", "Index", "Dashboard", null, null) /
+            @Html.ActionLink(Model.ProjectName, "Overview", "Project", new { pId = PM.Common.ShortGuid.Encode(Model.ProjectId) }, null) /
+            <span>Tasks</span>
+        </span>
+
+        <div class="header-content-right">
+            <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#new-task-modal" data-backdrop="static">Add New</button>
+        </div>
+    </div>
+
+    <div class="page-content">
+
+        <!-- TASK LIST -->
+        <div id ="tasks-list" class="col-md-9">
+           @Html.Partial("_TasksList", Model.Tasks)
+        </div>
+
+        <!-- Filtering widget -->
+        <div class="col-md-3">
+            <div class="widget">
+                <div class="tasks-filter">
+
+                    <input type="text" class="form-control" placeholder="Search">
+                    <br />
+
+                    <p>Status</p>
+                    <select class="form-control">
+                        <option>All</option>
+                        <option>New</option>
+                        <option>In progress</option>
+                        <option>Resolved</option>
+                    </select>
+
+                    <br />
+                    <p>Priority</p>
+                    <select class="form-control">
+                        <option>All</option>
+                        <option>Low</option>
+                        <option>Normal</option>
+                        <option>High</option>
+                    </select>
+
+                    <br />
+                    <p>Assigne to</p>
+                    <select class="form-control">
+                        <option>All</option>
+                        <option>ksterle</option>
+                        <option>jdoe</option>
+                    </select>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section Style
+{
+    @Styles.Render("~/Content/datepicker/css")
+}
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/datepicker/js")
+
+    <script>
+
+        $('#due-date').datepicker({
+            autoHide: true,
+            startDate: new Date(),
+            format: "dd/MM/yyyy",
+        });
+
+    </script>
+}
+

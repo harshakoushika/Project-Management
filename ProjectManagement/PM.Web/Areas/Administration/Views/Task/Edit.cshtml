@@ -1,0 +1,124 @@
+﻿@model PM.Web.Administration.Task.EditTaskViewModel
+
+@{
+    ViewBag.Title = "Task";
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+}
+
+<!-- LEFT MENU -->
+@Html.Partial("_LeftMenuBar", Model.ProjectId)
+
+<!-- PAGE -->
+<div class="page">
+
+    <div class="page-content-header">
+        <span class="breadcrumbs">
+            @Html.ActionLink("Home", "Index", "Dashboard", null, null) /
+            @Html.ActionLink((string)ViewBag.ProjectName, "Overview", "Project", new { pId = PM.Common.ShortGuid.Encode(Model.ProjectId) }, null) /
+            @Html.ActionLink("Tasks", "List", "Task", new { pId = PM.Common.ShortGuid.Encode(Model.ProjectId) }, null) /
+            <span>Edit</span>
+        </span>
+    </div>
+
+    <div class="page-content">
+        
+        <div id="edit-task">
+            @Html.Partial("_EditTask", Model)
+        </div>
+
+        <div class="col-md-9">
+           <div id="comments-list">
+               @Html.Partial("_CommentsList", Model.TaskComments)
+           </div>
+
+            <ul class="task-comments">
+                <li>
+                    <div class="widget">
+                        <div id="summernote"></div>
+                    </div>
+                    <button type="button" class="btn btn-md btn-success" onclick="addComment();">Comment</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section Style
+{
+    @Styles.Render("~/Content/task-edit/css")
+    @Styles.Render("~/Content/ui-slider/css")
+}
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/task-edit/js")
+    @Scripts.Render("~/bundles/ui-slider/js")
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('#summernote').summernote({
+                height: 100,                 
+            });            
+
+            $("#btn-submit").click(function (event) {
+                $('#edit-form').submit();
+            });
+
+            onStart();           
+        });
+
+        function addComment() {
+
+            Spinner.show();
+            var comment = $('#summernote').summernote('code');
+            var taskId = $('#Id').val();
+
+            $.ajax({
+                url: '@Url.Action("Comment", "Task", new { area = "Administration" })',
+                data: { 'taskId' : taskId, 'comment' : comment },
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                    console.log(data);
+                    $('#comments-list').html(data.html);
+                    Spinner.hide();
+                    Message.successDefault(data.responseText);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    Spinner.hide();
+                }
+            });
+        }
+
+        function onStart() {
+
+            var slider = $('#progress-slider')[0];
+            noUiSlider.create(slider, {
+                start: $('#Progress').val(),
+                behaviour: 'tap',
+                connect: [true, false],
+                step: 1,
+                range: {
+                    'min': 0,
+                    'max': 100
+                }
+            });
+            slider.noUiSlider.on('change', function (value) {
+                $('#Progress').val(parseInt(value))
+            });
+
+            $('#due-date').datepicker({
+
+                autoHide: true,
+                clearBtn: 'true',
+                todayBtn: true,
+                todayHighlight: true,
+                format: "dd/MM/yyyy",
+                startDate: new Date()
+            });            
+        }
+
+    </script>
+}

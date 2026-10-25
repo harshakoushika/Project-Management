@@ -1,0 +1,43 @@
+﻿@model Guid
+
+@using PM.Web.Infrastructure.HtmlHelpers
+
+<!-- SIDE MENU -->
+<div class="site-menubar">
+    <div class="site-menubar-body">
+        <ul class="nav-menu">
+            <li>
+                @Html.MenuItemLink("Home", "Index", "Dashboard", null, "glyphicon glyphicon-home")
+            </li>
+            <li>
+                @Html.MenuItemLink("Projects", "Projects", "Project", null, "glyphicon glyphicon-th-large")
+            </li>
+
+            <li>
+                @Html.MenuItemLink("Users", "Index", "User", null, "glyphicon glyphicon-user")
+            </li>
+
+            @if (Model != Guid.Empty)
+            {
+                <hr />
+
+                <li>
+                    @Html.MenuItemLink("Overview", "Overview", "Project", new { pId = PM.Common.ShortGuid.Encode(Model) }, "glyphicon glyphicon-stats")
+                </li>
+
+                <li>
+                    <a href="javascript:void(0);"><i class="glyphicon glyphicon-time"></i><span>Timeline</span></a>
+                </li>
+
+                <li>
+                    @Html.MenuItemLink("Tasks", "List", "Task", new { pId = PM.Common.ShortGuid.Encode(Model) }, "glyphicon glyphicon-tasks", "Edit")
+                </li>
+
+                <li>
+                    @Html.MenuItemLink("Team", "Team", "Project", new { pId = PM.Common.ShortGuid.Encode(Model) }, "glyphicon glyphicon-user")
+                </li>
+            }
+            
+        </ul>
+    </div>
+</div>

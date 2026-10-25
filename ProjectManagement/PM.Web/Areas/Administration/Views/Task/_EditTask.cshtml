@@ -1,0 +1,105 @@
+﻿@model PM.Web.Administration.Task.EditTaskViewModel
+
+@using PM.Common.Extensions
+@using PM.Web.Infrastructure.HtmlHelpers
+
+@using (Ajax.BeginForm("Edit", "Task", new { area = "Administration" },
+                            new AjaxOptions()
+                            {
+                                HttpMethod = "POST",
+                                OnSuccess = "Ajax.onSuccess(data, 'edit-task', false, onStart);",
+                                OnFailure = "Ajax.onError",
+                                LoadingElementId = "loader"
+                            }, new { id = "edit-form" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(vm => vm.Id)
+    @Html.HiddenFor(vm => vm.CreatedByUserId)
+    @Html.HiddenFor(vm => vm.ProjectId)
+    @Html.HiddenFor(vm => vm.DateCreated)
+    @Html.HiddenFor(vm => vm.DateUpdated)
+
+            <!-- TASK LIST -->
+    <div class="col-md-9">
+        <div class="widget">
+            <div class="create-task">
+
+                <div class="form-group">
+                    @Html.LabelFor(vm => vm.Title, "Title")
+                    @Html.TextBoxFor(vm => vm.Title, new { @class = "form-control", placeholder = "Enter task title" })
+                    @Html.ValidationMessageFor(p => p.Title)
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(vm => vm.Description, "Description")
+                    @Html.TextAreaFor(vm => vm.Description, new { @class = "form-control", placeholder = "Enter task description", rows = 4 })
+                    @Html.ValidationMessageFor(p => p.Description)
+                </div>
+
+                <!-- DROPDOWNS -->
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(vm => vm.AssignedToUserId, "Assigne to")
+                            @Html.DropDownListFor(vm => vm.AssignedToUserId, new SelectList(ViewBag.ProjectUsers, "Key", "Value"), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(vm => vm.PriorityId, "Priority")
+                            @Html.DropDownListFor(vm => vm.PriorityId, new SelectList(ViewBag.PriorityList, "Key", "Value"), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(vm => vm.DueDate, "Due Date")
+                            @Html.TextBoxFor(vm => vm.DueDate, "{0:dd/MM/yyyy}", new { @class = "form-control", placeholder = "dd/mm/yyyy", id="due-date" })
+                            @Html.ValidationMessageFor(p => p.DueDate)
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtering widget -->
+    <div class="col-md-3">
+        <div class="widget">
+            <div class="tasks-filter">
+
+                <div class="tasks-filter-info">
+                    <span>Author: <span class="pull-right">@ViewBag.ProjectUsers[Model.CreatedByUserId]</span></span> <br />
+                    <span>Created: <span class="pull-right">@Model.DateCreated.ToPrettyDateTimeString()</span></span> <br />
+                    <span>Last update: <span class="pull-right">@Model.DateUpdated.ToLocalTime().ToPrettyDateTimeString()</span></span>
+                </div>
+                <br />
+              
+                <div class="btn-group btn-group-justified" data-toggle="buttons">
+                    @{ var statuses = (IEnumerable<PM.Model.Common.ITaskStatusPoco>)ViewBag.StatusList; }
+                    @foreach (var status in statuses)
+                    {
+                        <label title="@status.Name" class="btn btn-primary @(status.Id == Model.StatusId ? "active" : "")">
+                            @Html.RadioButtonFor(vm => vm.StatusId, status.Id) @Html.TaskStatusIcon(status.Abrv)
+                        </label>
+                    }
+
+                </div>
+
+                <br />
+                <label for="progress-slider">Progress</label>
+                <div id="progress-slider"></div>
+                @Html.HiddenFor(vm => vm.Progress)
+
+                <br />
+                <button type="submit" class="btn btn-block btn-success">Save</button>
+
+            </div>
+        </div>
+    </div>
+}
